@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: ebook
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ebook_db
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+  api:
+    security:
+      token:
+        secret: ${TOKEN_SECRET:1kXsE4kBObaSEkKwY3RjldfM1AcnM2HLe96yfsUHI7r}
