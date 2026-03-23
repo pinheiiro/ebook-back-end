@@ -2,9 +2,9 @@ spring:
   application:
     name: ebook
   datasource:
-    url: jdbc:postgresql://localhost:5432/ebook_db
-    username: postgres
-    password: password
+    url: jdbc:postgresql://localhost:5432/ebook
+    username: gabrielp
+    password: pinheiro1900
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

@@ -9,6 +9,7 @@ import com.pinheiro.ebook.entidades.Usuario;
 import com.pinheiro.ebook.repositorios.EbookRepository;
 import com.pinheiro.ebook.repositorios.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,17 +25,16 @@ public class EbookService {
     private UsuarioRepository usuarioRepository;
 
     public EbookDTO create(EbookCreateDTO dto) {
-        /*
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario not found"));
-         */
+
+        Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         Ebook ebook = new Ebook();
         ebook.setTitulo(dto.titulo());
         ebook.setAutor(dto.autor());
         ebook.setCategoria(dto.categoria());
         ebook.setUrlCapa(dto.urlCapa());
         ebook.setTexto(dto.texto());
-        //ebook.setUsuario(usuario);
+        ebook.setUsuario(usuario);
         Ebook saved = ebookRepository.save(ebook);
         return toDTO(saved);
     }
