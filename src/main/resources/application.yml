@@ -2,7 +2,7 @@ spring:
   application:
     name: ebook
   datasource:
-    url: jdbc:postgresql://localhost:5432/ebook
+    url: jdbc:postgresql://212.85.0.229:5432/ebook
     username: gabrielp
     password: pinheiro1900
     driver-class-name: org.postgresql.Driver
@@ -15,7 +15,9 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: true
-  api:
-    security:
-      token:
-        secret: ${TOKEN_SECRET:1kXsE4kBObaSEkKwY3RjldfM1AcnM2HLe96yfsUHI7r}
+api:
+  security:
+    token:
+      secret: ${TOKEN_SECRET:1kXsE4kBObaSEkKwY3RjldfM1AcnM2HLe96yfsUHI7r}
+    refresh-token:
+      expiration: 604800000

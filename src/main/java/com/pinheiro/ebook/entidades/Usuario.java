@@ -18,12 +18,13 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+
+@Entity
+@Table(name = "usuarios")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "usuarios")
 public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,9 +45,16 @@ public class Usuario implements UserDetails {
     @OneToMany(mappedBy = "usuario")
     private List<Ebook> ebooksCriados;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "perfis_usuarios",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "perfil_id")
+    )
+    private List<Perfis> perfis;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return this.perfis;
     }
 
     @Override

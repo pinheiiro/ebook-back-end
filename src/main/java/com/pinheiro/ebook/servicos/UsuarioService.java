@@ -1,9 +1,9 @@
 package com.pinheiro.ebook.servicos;
 
-import com.pinheiro.ebook.dtos.UsuarioCreateDTO;
-import com.pinheiro.ebook.dtos.UsuarioDTO;
-import com.pinheiro.ebook.dtos.UsuarioUpdateDTO;
+import com.pinheiro.ebook.dtos.*;
+import com.pinheiro.ebook.entidades.Perfis;
 import com.pinheiro.ebook.entidades.Usuario;
+import com.pinheiro.ebook.repositorios.PerfisRepository;
 import com.pinheiro.ebook.repositorios.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +18,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PerfisRepository perfisRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -61,8 +64,43 @@ public class UsuarioService {
     }
 
     public Optional<Usuario> findByEmail(String email) {
-        // Assuming we add a method in repository
         return usuarioRepository.findByEmail(email);
+    }
+
+    public UsuarioDTOComPerfis findByIdComPerfis(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+        return toDTOComPerfis(usuario);
+    }
+
+    public void adicionarPerfil(Long usuarioId, Long perfilId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+        Perfis perfis = perfisRepository.findById(perfilId)
+                .orElseThrow(() -> new RuntimeException("Perfil não encontrado"));
+
+        if (!usuario.getPerfis().contains(perfis)) {
+            usuario.getPerfis().add(perfis);
+            usuarioRepository.save(usuario);
+        }
+    }
+
+    public void removerPerfil(Long usuarioId, Long perfilId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+        Perfis perfis = perfisRepository.findById(perfilId)
+                .orElseThrow(() -> new RuntimeException("Perfil não encontrado"));
+
+        usuario.getPerfis().remove(perfis);
+        usuarioRepository.save(usuario);
+    }
+
+    public List<PerfisDTO> obterPerfisDoUsuario(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+        return usuario.getPerfis().stream()
+                .map(perfis -> new PerfisDTO(perfis.getId(), perfis.getNome()))
+                .collect(Collectors.toList());
     }
 
     private UsuarioDTO toDTO(Usuario usuario) {
@@ -72,6 +110,21 @@ public class UsuarioService {
                 usuario.getEmail(),
                 usuario.getDataCriacao(),
                 usuario.getUltimaAtualizacao()
+        );
+    }
+
+    private UsuarioDTOComPerfis toDTOComPerfis(Usuario usuario) {
+        List<PerfisDTO> perfisDTO = usuario.getPerfis().stream()
+                .map(perfis -> new PerfisDTO(perfis.getId(), perfis.getNome()))
+                .collect(Collectors.toList());
+
+        return new UsuarioDTOComPerfis(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getEmail(),
+                usuario.getDataCriacao(),
+                usuario.getUltimaAtualizacao(),
+                perfisDTO
         );
     }
 }
